@@ -117,8 +117,8 @@ function getItems(responseText)
         if (isToday)
         {
              json.sort(function(a, b) {
-                 var d1 = new Date(a.due_date_utc);
-                 var d2 = new Date(b.due_date_utc);
+                 var d1 = new Date(a.due_datetime);
+                 var d2 = new Date(b.due_datetime);
                  if (d1 > d2)
                      return 1;
                  else if (d1 == d2)
@@ -180,9 +180,9 @@ function getItems(responseText)
                 today.setSeconds(0);
                 //considered "Today" if due date is in the current day or less (overdue)
                 today = addDays(today, 1);
-                if (json[i].due_date_utc === null)
+                if (json[i].due_datetime === null)
                     continue;
-                var d = new Date(json[i].due_date_utc);
+                var d = new Date(json[i].due_datetime);
                 if (d >= today)
                 {
                     continue;
@@ -209,13 +209,13 @@ function getItems(responseText)
             else
                 itemDates = itemDates + json[i].date_string + "|";
             itemIndentation = itemIndentation + json[i].indent + "|";
-            if (json[i].due_date_utc === null)
+            if (json[i].due_datetime === null)
             {
                 itemDueDates = itemDueDates + "|"; 
             }
             else
             {
-                var d = new Date(json[i].due_date_utc);
+                var d = new Date(json[i].due_datetime);
                 //if the time is 23:59 this specifies "no time"
                 if ((d.getHours() == 23) && (d.getMinutes() == 59))
                     itemDueDates = itemDueDates + monthNames[d.getMonth()] + " " + d.getDate() + "|";
@@ -269,10 +269,10 @@ function getAllItemsForTimeline(responseText)
     
         for(var i=0;i<json.length;i++)
         {
-            if (json[i].due_date_utc)
+            if (json[i].due_datetime)
             {
                 
-                var date = new Date(json[i].due_date_utc);
+                var date = new Date(json[i].due_datetime);
                 var minDate = new Date();
                 //min date is two days ago. Have to use this weird calculation because javascript is stupid
                 minDate.setTime( minDate.getTime() - 2 * 86400000 );
