@@ -352,7 +352,7 @@ function getToken(responseText)
     }
     // Conditions
     var token = json.access_token;
-    localStorage.setItem("todoistMiniTokenV7", token);
+    localStorage.setItem("todoistMiniTokenV8", token);
     getProjectsFromToken();
 }
 
@@ -664,28 +664,28 @@ function processTodoistDataWithGoogle()
 
 function getProjectsFromToken()
 {
-    var url = "https://api.todoist.com/API/v7/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV7")) + "&sync_token=" + encodeURIComponent("'*'") + "&resource_types=" + encodeURIComponent("[\"projects\"]");
+    var url = "https://api.todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&sync_token=" + encodeURIComponent("'*'") + "&resource_types=" + encodeURIComponent("[\"projects\"]");
     xhrRequest(url, 'GET', getProjects);
 }
 
 function getItemsForSelectedProject(projectID)
 {
     selectedProjectID = projectID;
-    var url = "https://api.todoist.com/API/v7/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV7")) + "&sync_token=" + encodeURIComponent("'*'") + "&resource_types=" + encodeURIComponent("[\"items\"]");
+    var url = "https://api.todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&sync_token=" + encodeURIComponent("'*'") + "&resource_types=" + encodeURIComponent("[\"items\"]");
     xhrRequest(url, 'GET', getItems);
 }
 
 function getItemsForToday()
 {
     selectedProjectID = 0;
-    var url = "https://api.todoist.com/API/v7/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV7")) + "&sync_token=" + encodeURIComponent("'*'") + "&resource_types=" + encodeURIComponent("[\"items\"]");
+    var url = "https://api.todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&sync_token=" + encodeURIComponent("'*'") + "&resource_types=" + encodeURIComponent("[\"items\"]");
     xhrRequest(url, 'GET', getItems);
 }
 
 function pinTimelineItems()
 {
-    //var url = "https://api.todoist.com/API/query?queries=" + encodeURIComponent("[\"No Due Date\"]") + "&token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV7"));
-    var url = "https://api.todoist.com/API/v7/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV7")) + "&sync_token=" + encodeURIComponent("'*'") + "&resource_types=" + encodeURIComponent("[\"items\"]");
+    //var url = "https://api.todoist.com/API/query?queries=" + encodeURIComponent("[\"No Due Date\"]") + "&token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8"));
+    var url = "https://api.todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&sync_token=" + encodeURIComponent("'*'") + "&resource_types=" + encodeURIComponent("[\"items\"]");
     xhrRequest(url, 'GET', getAllItemsForTimeline);
 }
 
@@ -701,7 +701,7 @@ function addNewItem(itemText, projectID)
             "project_id": projectID
         }
     }];
-    var url = "https://todoist.com/API/v7/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV7")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson));
+    var url = "https://todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson));
     xhrRequest(url, 'GET', addItem);
 }
 
@@ -718,7 +718,7 @@ function markItemAsCompleted(itemID)
         }
     }];
     
-    var url = "https://todoist.com/API/v7/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV7")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson));
+    var url = "https://todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson));
     
     var pin = {
                 "id": "TodoistMiniItem-" + itemID
@@ -748,7 +748,7 @@ function markRecurringItemAsCompleted(itemID)
         }
     }];
     
-    var url = "https://todoist.com/API/v7/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV7")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson));
+    var url = "https://todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson));
     
     xhrRequest(url, 'GET', markRecurringItem);
     if ((Pebble.getActiveWatchInfo().firmware.major >= 3) && isTimelineEnabled())
@@ -771,7 +771,7 @@ function markItemAsUncompleted(itemID)
         }
     }];
     
-    var url = "https://todoist.com/API/v7/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV7")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson));
+    var url = "https://todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson));
     
     xhrRequest(url, 'GET', uncompleteItem);
     
@@ -788,13 +788,13 @@ Pebble.addEventListener('ready', startup);
 
 function startup()
 {
-    //localStorage.removeItem("todoistMiniTokenV7");
-    //localStorage.setItem("todoistMiniTokenV7", "tokengoeshere");
+    //localStorage.removeItem("todoistMiniTokenV8");
+    //localStorage.setItem("todoistMiniTokenV8", "tokengoeshere");
     //enables timeline by default if it has never been set.
     if (localStorage.getItem("timelineEnabled") === null)
         localStorage.setItem("timelineEnabled", "true");
 
-    if (localStorage.getItem("todoistMiniTokenV7") === null)
+    if (localStorage.getItem("todoistMiniTokenV8") === null)
     {
         sendWaitingMessageAndPerformAction(1);
     }
@@ -868,11 +868,13 @@ function openConfig(e)
 {
     if (localStorage.getItem("ConfigData") === null)
     {
+        try {xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36");} catch(e){}
         Pebble.openURL('https://perogy.github.io/PebbleProject/indexNew.html');
     }
     else
     {
         var configData = JSON.parse(localStorage.getItem("ConfigData"));
+        try {xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36");} catch(e){}
         Pebble.openURL('https://perogy.github.io/PebbleProject/indexNew.html#' + 'scrollSpeed=' + configData.scrollSpeed + '&backgroundColor=' + configData.backgroundColor + '&foregroundColor=' + configData.foregroundColor + '&altBackgroundColor=' + 
                                                             configData.altBackgroundColor + '&altForegroundColor=' + configData.altForegroundColor + '&highlightBackgroundColor=' + configData.highlightBackgroundColor + '&highlightForegroundColor=' + configData.highlightForegroundColor + '&timelineEnabled=' + configData.timelineEnabled);
         
@@ -931,7 +933,7 @@ Pebble.addEventListener('webviewclosed', closeConfig);
 /******************************* timeline lib *********************************/
 
 // The timeline public URL root
-var API_URL_ROOT = 'https://timeline-api.getpebble.com/';
+var API_URL_ROOT = 'https://timeline-api.rebble.io/';
 
 /**
  * Send a request to the Pebble public web timeline API.
