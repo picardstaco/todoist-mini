@@ -181,13 +181,10 @@ function getItems(responseText)
                 today.setSeconds(0);
                 //considered "Today" if due date is in the current day or less (overdue)
                 today = addDays(today, 1);
-       
 
-              console.log(json[i].due);
                 if ((json[i].due) == null)
                     continue;
                 var d = new Date(json[i].due.date);
-                console.log(d);
                 if (d >= today)
                 {
                     continue;
@@ -677,7 +674,6 @@ function getItemsForSelectedProject(projectID)
 {
     selectedProjectID = projectID;
     var url = "https://api.todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&sync_token=" + encodeURIComponent("'*'") + "&resource_types=" + encodeURIComponent("[\"items\"]");
-    console.log("https://api.todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&sync_token=" + encodeURIComponent("'*'") + "&resource_types=" + encodeURIComponent("[\"items\"]"));
     xhrRequest(url, 'GET', getItems);
 }
 
@@ -725,8 +721,6 @@ function markItemAsCompleted(itemID)
     }];
     
     var url = "https://todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson));
-	  console.log("https://todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson)));
-
     var pin = {
                 "id": "TodoistMiniItem-" + itemID
               };

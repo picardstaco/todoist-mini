@@ -6,7 +6,7 @@
 #include "Projects.h"
 #include "Items.h"
 
-char *userMessage = "Version 1.25 - now compiles on Pebble Time 2!";
+char *userMessage = "Version 1.4 - Todoist V8 API Fixes";
 
 char *translate_error(AppMessageResult result) {
   switch (result) {
