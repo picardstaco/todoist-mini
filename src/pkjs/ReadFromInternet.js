@@ -6,6 +6,14 @@ var selectedProjectID;
 var markCompletedUUID;
 var markCompletedItemID;
 
+function search(nameKey, myArray){
+    for (var i=0; i < myArray.length; i++) {
+        if (myArray[i].id === nameKey) {
+            return myArray[i].sortnum;
+        }
+    }
+}
+
 function createUUID() {
     // http://www.ietf.org/rfc/rfc4122.txt
     var s = [];
@@ -129,10 +137,33 @@ function getItems(responseText)
             });   
         }
         else
+  
+        for(var i=0;i<json.length;i++)
+        {
+	        if (json[i].parent_id == null)
+	        {
+		        json[i].sortnum = json[i].child_order * 1000;
+	        }
+	        else
+	        continue;
+        }
+  
+        for(var i=0;i<json.length;i++)
+        {
+        	if (json[i].parent_id != null)
+        	{ 
+        		json[i].sortnum = search(json[i].parent_id,json) + json[i].child_order;
+        	}
+        	else
+        		continue;
+        }
+  
+          
         {
             json.sort(function(a, b) {
-                return parseInt(a.item_order) - parseInt(b.item_order);
+                return a.sortnum  - b.sortnum;
             });
+         
         }
             
         if (json[0])
@@ -210,7 +241,10 @@ function getItems(responseText)
                 itemDates = itemDates + "|";
             else
                 itemDates = itemDates + json[i].due.string + "|";
-            itemIndentation = itemIndentation + json[i].indent + "|";
+      if (json[i].parent_id == null)
+                itemIndentation = itemIndentation +  "0|";
+            else
+              itemIndentation = itemIndentation + "1|";
             if (json[i].due == null)
             {
                 itemDueDates = itemDueDates + "|"; 
@@ -794,7 +828,7 @@ function startup()
     //localStorage.setItem("todoistMiniTokenV8", "tokenhere");
     //enables timeline by default if it has never been set.
     if (localStorage.getItem("timelineEnabled") === null)
-        localStorage.setItem("timelineEnabled", "true"); //make true when fixed
+        localStorage.setItem("timelineEnabled", "true");
 
     if (localStorage.getItem("todoistMiniTokenV8") === null)
     {
@@ -997,4 +1031,5 @@ function deleteUserPin(pin, callback) {
 }
 
 /***************************** end timeline lib *******************************/
+
 
