@@ -828,7 +828,7 @@ function startup()
     //localStorage.setItem("todoistMiniTokenV8", "tokenhere");
     //enables timeline by default if it has never been set.
     if (localStorage.getItem("timelineEnabled") === null)
-        localStorage.setItem("timelineEnabled", "false");
+        localStorage.setItem("timelineEnabled", "true");
 
     if (localStorage.getItem("todoistMiniTokenV8") === null)
     {
