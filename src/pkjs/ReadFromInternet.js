@@ -14,6 +14,18 @@ function search(nameKey, myArray){
     }
 }
 
+function hasduedate(id, myArray){
+    for (var i=0; i < myArray.length; i++) {
+        if (myArray[i].id === id) {
+            if (myArray[i].due != null) 
+              return true;
+            else
+              return false;
+            
+        }
+    }
+}
+
 function createUUID() {
     // http://www.ietf.org/rfc/rfc4122.txt
     var s = [];
@@ -741,7 +753,7 @@ function addNewItem(itemText, projectID)
     xhrRequest(url, 'GET', addItem);
 }
 
-function markItemAsCompleted(itemID)
+function markItemAsCompleted(itemID, duedate)
 {
     markCompletedUUID = createUUID();
     markCompletedItemID = itemID;
@@ -758,7 +770,7 @@ function markItemAsCompleted(itemID)
     var pin = {
                 "id": "TodoistMiniItem-" + itemID
               };
-    if ((Pebble.getActiveWatchInfo().firmware.major >= 3) && isTimelineEnabled())
+    if ((Pebble.getActiveWatchInfo().firmware.major >= 3) && isTimelineEnabled() && (duedate != ""))
     {
         //delete pin from timeline if completed
         deleteUserPin(pin, function(responseText) 
@@ -786,7 +798,7 @@ function markRecurringItemAsCompleted(itemID)
     var url = "https://todoist.com/API/v8/sync?token=" + encodeURIComponent(localStorage.getItem("todoistMiniTokenV8")) + "&commands=" + encodeURIComponent(JSON.stringify(commandsjson));
     
     xhrRequest(url, 'GET', markRecurringItem);
-    if ((Pebble.getActiveWatchInfo().firmware.major >= 3) && isTimelineEnabled())
+    if ((Pebble.getActiveWatchInfo().firmware.major >= 3) && isTimelineEnabled() && (duedate != ""))
     {
         //update timeline pins if recurring item completed
         pinTimelineItems();
@@ -810,7 +822,7 @@ function markItemAsUncompleted(itemID)
     
     xhrRequest(url, 'GET', uncompleteItem);
     
-    if ((Pebble.getActiveWatchInfo().firmware.major >= 3) && isTimelineEnabled())
+    if ((Pebble.getActiveWatchInfo().firmware.major >= 3) && isTimelineEnabled() && (duedate != ""))
     {
         //update timeline pins if item uncompleted
         pinTimelineItems();
@@ -828,7 +840,7 @@ function startup()
     //localStorage.setItem("todoistMiniTokenV8", "tokenhere");
     //enables timeline by default if it has never been set.
     if (localStorage.getItem("timelineEnabled") === null)
-        localStorage.setItem("timelineEnabled", "true");
+        localStorage.setItem("timelineEnabled", "false");
 
     if (localStorage.getItem("todoistMiniTokenV8") === null)
     {
@@ -852,15 +864,15 @@ Pebble.addEventListener('appmessage',
     }
     if(e.payload.SELECTED_ITEM)
     {
-        markItemAsCompleted(e.payload.SELECTED_ITEM);
+        markItemAsCompleted(e.payload.SELECTED_ITEM, e.payload.ITEM_DATES);
     }
     if(e.payload.SELECTED_ITEM_RECURRING)
     {
-        markRecurringItemAsCompleted(e.payload.SELECTED_ITEM_RECURRING);
+        markRecurringItemAsCompleted(e.payload.SELECTED_ITEM_RECURRING, e.payload.ITEM_DATES);
     }
     if(e.payload.SELECTED_ITEM_UNCOMPLETE)
     {
-        markItemAsUncompleted(e.payload.SELECTED_ITEM_UNCOMPLETE);
+        markItemAsUncompleted(e.payload.SELECTED_ITEM_UNCOMPLETE, e.payload.ITEM_DATES);
     }
     if(e.payload.ADD_NEW_ITEM)
     {
