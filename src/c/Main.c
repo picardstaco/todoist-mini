@@ -69,8 +69,7 @@ void sendItemIDToPhone(int index)
         dict_write_cstring(iter, SELECTED_ITEM_UNCOMPLETE, wd->items->itemIDs[index]);
     else
         dict_write_cstring(iter, SELECTED_ITEM, wd->items->itemIDs[index]);
-	
-    dict_write_cstring(iter, ITEM_DATES, wd->items->itemDates[index]);
+    
     dict_write_end(iter);
   
     app_message_outbox_send();
