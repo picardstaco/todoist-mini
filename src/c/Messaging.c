@@ -6,7 +6,7 @@
 #include "Projects.h"
 #include "Items.h"
 
-char *userMessage = "Version 1.4 - Todoist V8 API Fixes";
+char *userMessage = "Version 1.41 - Timeline and Subtask Fixes";
 
 char *translate_error(AppMessageResult result) {
   switch (result) {
