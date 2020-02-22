@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<script src="jquery-2.1.3.js"></script>
+		<script src='spectrum.js'></script>
+		<link rel='stylesheet' href='spectrum.css' />
+		<script>
+        var OAUTHURL    =   'https://accounts.google.com/o/oauth2/auth?';
+        var VALIDURL    =   'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
+        var SCOPE       =   'https://www.googleapis.com/auth/userinfo.email';
+        var CLIENTID    =   '659714855848-j5mii2gk0h0u3roj2eobdet5g3rfr324.apps.googleusercontent.com';
+        var REDIRECT    =   'https://perogy.github.io/PebbleProject/callback.html';
+		var REDIRECTTODOIST    =   'https://perogy.github.io/PebbleProject/callbackTodoist.html';
+        var LOGOUT      =   'http://accounts.google.com/Logout';
+        var TYPE        =   'token';
+        var _url        =   OAUTHURL + 'scope=' + SCOPE + '&client_id=' + CLIENTID + '&redirect_uri=' + REDIRECT + '&response_type=' + TYPE;
+		var _urlTodoist = 'https://todoist.com/oauth/authorize?client_id=' + encodeURIComponent('2a11ee6e18fe46ad89f9dcbd5507b76b') + '&scope=' + encodeURIComponent('data:read_write') + '&state=' + encodeURIComponent('cc88177b38774df2acfedd668be53824')
+        var acToken;
+        var tokenType;
+        var expiresIn;
+        var user;
+        var loggedIn    =   false;
+
+        function login() {
+            var win         =   window.open(_url, "windowname1", 'width=800, height=600'); 
+
+            var pollTimer   =   window.setInterval(function() { 
+                try {
+                    //console.log(win.document.URL);
+                    if (win.document.URL.indexOf(REDIRECT) != -1) {
+                        window.clearInterval(pollTimer);
+                        var url =   win.document.URL;
+                        acToken =   gup(url, 'access_token');
+                        tokenType = gup(url, 'token_type');
+                        expiresIn = gup(url, 'expires_in');
+                        win.close();
+
+                        validateToken(acToken);
+                    }
+                } catch(e) {
+                }
+            }, 500);
+        }
+		
+		function loginTodoistNew() {
+            var win2         =   window.open(_urlTodoist, "windowname2", 'width=800, height=600'); 
+
+        }
+
+        function validateToken(token) {
+            $.ajax({
+                url: VALIDURL + token,
+                data: null,
+                success: function(responseText){  
+                    getUserInfo();
+                    loggedIn = true;
+                    $('#loginText').hide();
+                    $('#logoutText').show();
+                },  
+                dataType: "jsonp"  
+            });
+        }
+
+        function getUserInfo() {
+            //console.log(acToken);
+        }
+
+
+        //credits: http://www.netlobo.com/url_query_string_javascript.html
+        function gup(url, name) {
+            name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+            var regexS = "[\\#&]"+name+"=([^&#]*)";
+            var regex = new RegExp( regexS );
+            var results = regex.exec( url );
+            if( results == null )
+                return "";
+            else
+                return results[1];
+        }
+
+        function startLogoutPolling() {
+            $('#loginText').show();
+            $('#logoutText').hide();
+            loggedIn = false;
+        }
+
+
+	var xhrRequest = function (url, type, callback) {
+	  var xhr = new XMLHttpRequest();
+	  xhr.onload = function () {
+	    callback(this.responseText);
+	  };
+	  xhr.open(type, url);
+	  xhr.send();
+	};
+
+	function loginTodoist() {
+		var loginData = {email:document.getElementById('todoistEmail').value, password:document.getElementById('todoistPassword').value, googleToken:false};
+		var return_to = getQueryParam('return_to', 'pebblejs://close#');
+		location.href = return_to + encodeURIComponent(JSON.stringify(loginData));
+	}
+	
+	
+	function getQueryParam(variable, defaultValue) {
+	  // Find all URL parameters
+	  var query = location.search.substring(1);
+	  var vars = query.split('&');
+	  for (var i = 0; i < vars.length; i++) {
+		var pair = vars[i].split('=');
+
+		// If the query variable parameter is found, decode it to use and return it for use
+		if (pair[0] === variable) {
+		  return decodeURIComponent(pair[1]);
+		}
+	  }
+	  return defaultValue || false;
+	}
+
+	function getUrlParameter(sParam)
+	{
+		var sPageURL = window.location.hash.substring(1);
+		var sURLVariables = sPageURL.split('&');
+		for (var i = 0; i < sURLVariables.length; i++) 
+		{
+			var sParameterName = sURLVariables[i].split('=');
+			if (sParameterName[0] == sParam) 
+			{
+				return sParameterName[1];
+			}
+		}
+	}     
+	function saveButtonPressed() {
+		var backgroundColorJ = $("#BackgroundColor").spectrum("get");
+		var foregroundColorJ = $("#ForegroundColor").spectrum("get");
+		var altBackgroundColorJ = $("#AltBackgroundColor").spectrum("get");
+		var altForegroundColorJ = $("#AltForegroundColor").spectrum("get");
+		var highlightBackgroundColorJ = $("#HighlightBackgroundColor").spectrum("get");
+		var highlightForegroundColorJ = $("#HighlightForegroundColor").spectrum("get");
+		var timelineEnabledJ = $("#timelineEnabled").prop("checked");
+		var loginData = {scrollSpeed:document.getElementById('scrollSpeed').value,
+						 backgroundColor:backgroundColorJ.toHex(),
+						foregroundColor:foregroundColorJ.toHex(),
+						altBackgroundColor:altBackgroundColorJ.toHex(),
+						altForegroundColor:altForegroundColorJ.toHex(),
+						highlightBackgroundColor:highlightBackgroundColorJ.toHex(),
+						highlightForegroundColor:highlightForegroundColorJ.toHex(),
+						timelineEnabled:timelineEnabledJ,
+						type:'configData'};
+		var return_to = getQueryParam('return_to', 'pebblejs://close#');
+		location.href = return_to + encodeURIComponent(JSON.stringify(loginData));
+	}
+	
+	function defaultButtonPressed() {
+		$("#scrollSpeed").val(7);
+		$("#BackgroundColor").spectrum("set", '#AAAAAA');
+		$("#ForegroundColor").spectrum("set", '#000000');
+		$("#AltBackgroundColor").spectrum("set", '#555555');
+		$("#AltForegroundColor").spectrum("set", '#FFFFFF');
+		$("#HighlightBackgroundColor").spectrum("set", '#FF0000');
+		$("#HighlightForegroundColor").spectrum("set", '#FFFFFF');
+		$("#timelineEnabled").prop("checked", true);
+	}
+	
+
+
+		</script>
+		
+
+		
+		<script>
+		$(document).ready(function(){
+			
+			
+			
+			$("#scrollSpeed").val(getUrlParameter('scrollSpeed'));
+			$("#BackgroundColor").val(getUrlParameter('backgroundColor'));
+			$("#ForegroundColor").val(getUrlParameter('foregroundColor'));
+			$("#AltBackgroundColor").val(getUrlParameter('altBackgroundColor'));
+			$("#AltForegroundColor").val(getUrlParameter('altForegroundColor'));
+			$("#HighlightBackgroundColor").val(getUrlParameter('highlightBackgroundColor'));
+			$("#HighlightForegroundColor").val(getUrlParameter('highlightForegroundColor'));
+			
+			if (getUrlParameter('timelineEnabled') == "true")
+			{
+				$("#timelineEnabled").prop("checked", true);
+			}
+			else
+			{
+				$("#timelineEnabled").prop("checked", false);
+			}
+			
+			$(".ColorSelect").spectrum({
+				showPaletteOnly: true,
+				showPalette:true,
+				palette: [
+					['RGB(170, 255, 85);','RGB(255, 255, 170);','RGB(170, 170, 170);','RGB(255, 255, 255);','RGB(170, 255, 170);','RGB(85, 255, 0);','RGB(170, 255, 0);','RGB(255, 255, 85);'],
+					['RGB(0, 0, 0);','RGB(85, 85, 85);','RGB(85, 255, 85);','RGB(0, 255, 0);','RGB(255, 255, 0);','RGB(255, 170, 85);','RGB(0, 255, 85);','RGB(0, 170, 0);'],
+					['RGB(85, 170, 0);','RGB(170, 170, 85);','RGB(170, 170, 0);','RGB(255, 170, 0);','RGB(255, 85, 0);','RGB(255, 170, 170);','RGB(85, 255, 170);','RGB(0, 170, 85);'],
+					['RGB(85, 170, 85);','RGB(0, 85, 0);','RGB(85, 85, 0);','RGB(170, 85, 0);','RGB(255, 0, 0);','RGB(255, 85, 85);','RGB(0, 255, 170);','RGB(0, 170, 170);'],
+					['RGB(85, 170, 170);','RGB(0, 85, 85);','RGB(170, 85, 85);','RGB(255, 0, 85);','RGB(85, 255, 255);','RGB(0, 255, 255);','RGB(0, 85, 170);','RGB(85, 0, 0);'],
+					['RGB(170, 0, 0);','RGB(170, 255, 255);','RGB(0, 170, 255);','RGB(0, 0, 170);','RGB(0, 0, 85);','RGB(85, 0, 85);','RGB(170, 0, 85);','RGB(255, 0, 170);'],
+					['RGB(85, 170, 255);','RGB(0, 0, 255);','RGB(85, 0, 255);','RGB(85, 0, 170);','RGB(170, 0, 170);','RGB(255, 0, 255);','RGB(255, 85, 170);','RGB(0, 85, 255);'],
+					['RGB(85, 85, 255);','RGB(85, 85, 170);','RGB(170, 0, 255);','RGB(170, 85, 170);','RGB(255, 85, 255);','RGB(255, 170, 255);','RGB(170, 170, 255);','RGB(170, 85, 255);'],
+				]
+			});
+			
+			if (!getUrlParameter('scrollSpeed'))
+			{
+				defaultButtonPressed();
+				return;
+			}
+			
+			
+		});
+		
+		</script>
+
+		<style>
+		.block label { display: inline-block; width: 100px; text-align: right;padding-bottom:10px;}
+		.block input { width:150px; height:25px}
+		
+		.blockBottom label { display: inline-block; width: 200px; text-align: right;padding-bottom:10px;}
+		.blockBottom input {width:50px;}
+		</style>
+
+	</head>
+
+	<body style="background-color: white;">
+				
+		<div style="margin:0 auto;width:90%;border-style: solid;padding:10px 5px;border-color: #5980DC;background-color:#F2F2F2">
+			<div style="margin:0 auto;width:255px;">
+				<button type="button" onClick='loginTodoistNew();' id="loginTodoist" style="width: 255px; height:40px">
+		        Login to Todoist
+				</button>
+			</div>
+			<div style="margin:0 auto;width:255px;">
+				<div style="text-align:center;padding-top:15px">
+					No account? <a href="http://www.todoist.com">Sign up here</a>
+				</div>
+				<hr/>
+			</div>
+			
+			<div style="margin:0 auto;width:255px;">
+				<div style="text-align:center"><b>Settings</b></div>
+				<div class="blockBottom">
+					<label style="width:150px">Scroll speed: </label><input type="range" id="scrollSpeed" min="1" max="10" style="width:100px"/>
+				</div>
+				<div class="blockBottom">
+					<label>Background Color: </label><input type='text' class="ColorSelect" id="BackgroundColor"/>
+				</div>
+				<div class="blockBottom">
+					<label>Foreground Color: </label><input type='text' class="ColorSelect" id="ForegroundColor" />
+				</div>
+				<div class="blockBottom">
+					<label>Alt Background Color: </label><input type='text' class="ColorSelect" id="AltBackgroundColor" />
+				</div>
+				<div class="blockBottom">
+					<label>Alt Foreground Color: </label><input type='text' class="ColorSelect" id="AltForegroundColor" />
+				</div>
+				<div class="blockBottom">
+					<label>Highlight Background Color: </label><input type='text' class="ColorSelect" id="HighlightBackgroundColor" />
+				</div>
+
+				<div class="blockBottom">
+					<label>Highlight Foreground Color: </label><input type='text' class="ColorSelect" id="HighlightForegroundColor" />
+				</div>
+				
+				<div class="blockBottom">
+					<label style="width:200px">Timeline Enabled: </label><input type="checkbox" id="timelineEnabled" style="height:15px;width:15px;position:relative;left:5px;top:2px" />
+				</div>
+				
+				<div style="margin=0 auto;width:255px; padding-bottom:20px;padding-top:20px" onclick="defaultButtonPressed()">
+					<button type="button" onClick='defaultButtonPressed();' id="DefaultSettings" style="width: 255px; height:30px">
+						Reset to Defaults
+					</button>
+				</div>
+				
+				<div style="margin:0 auto;width:255px; padding-bottom:15px">
+					<button type="button" onClick='saveButtonPressed();' id="SaveSettings" style="width: 255px; height:40px">
+						Save Settings
+					</button>
+				</div>
+				
+				<hr/>
+				
+				<div style="text-align:center">
+					If you like Todoist Mini please consider donating to a poor programmer :-) Dogecoin, Bitcoin and Paypal accepted.
+				</div>
+			</div>
+			<div style="margin:0 auto;width:100px">
+				<div style="height:15px"></div>
+				<script src="coindonation/coin.js"></script>
+				<script>
+				CoinWidgetCom.go({
+					wallet_address: "1HZ61V4ashK9kwLkxy4411FUF4WoKycwAT"
+					, currency: "bitcoin"
+					, counter: "hide"
+					, alignment: "bc"
+					, qrcode: true
+					, auto_show: false
+					, lbl_button: "Donate"
+					, lbl_address: "My Bitcoin Address:"
+					, lbl_count: "donations"
+					, lbl_amount: "BTC"
+				});
+				</script>
+				<div style="height:15px"></div>
+				<script>
+				CoinWidgetCom.go({
+					/* make sure you update the wallet_address or you will not get your donations */
+					wallet_address: "D9RCGBLPzTTLUVrC2KAV1jsw1iHg4nzmJv"
+					, currency: "dogecoin"
+					, counter: "hide"
+					, alignment: "bc"
+					, language: "en"
+					, decimals: 2
+					, lbl_amount: "DOGE"
+				});
+				</script>
+				<div style="height:15px"></div>
+			</div>
+			<div style="margin:0 auto;width:160px;padding:10px 5px">
+				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+					<input type="hidden" name="cmd" value="_s-xclick">
+					<input type="hidden" name="hosted_button_id" value="HZ6KRYJMXNU6W">
+					<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+					<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+				</form>
+			</div>
+		</div>
+
+
+		<a href="#" style="display:none" id="logoutText" target='myIFrame' onclick="myIFrame.location='https://www.google.com/accounts/Logout'; startLogoutPolling();return false;"> Click here to logout </a>
+		<iframe name='myIFrame' id="myIFrame" style='display:none'></iframe>
+	</body>
+</html>
+				
