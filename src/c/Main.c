@@ -867,7 +867,9 @@ void config_provider(Window *window)
 {
     window_single_click_subscribe(BUTTON_ID_BACK, back_click_handler);
     window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
+    window_single_repeating_click_subscribe(BUTTON_ID_UP, 500, up_click_handler);
     window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
+    window_single_repeating_click_subscribe(BUTTON_ID_DOWN, 500, down_click_handler);
     window_single_click_subscribe(BUTTON_ID_SELECT, menu_select_callback);
 }
 
