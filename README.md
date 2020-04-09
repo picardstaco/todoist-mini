@@ -1,6 +1,6 @@
 ## Todoist Mini
 
-Github repository for the Pebble Watch app Todoist Mini
+Github repository for the Pebble Watch app Todoist Mini https://apps.rebble.io/en_US/application/557f9210bb3773c25800008e
 
 Todoist Mini is an unofficial pebble watch app for the popular productivity software "Todoist".
 
